@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Revenus et Dépenses</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart.js (pour les graphiques) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKJpdfbZ5-Me5rJ8mNrZ4dToBvt59H6Uk",
+            authDomain: "flowup-ed44b.firebaseapp.com",
+            projectId: "flowup-ed44b",
+            storageBucket: "flowup-ed44b.firebasestorage.app",
+            messagingSenderId: "43844276882",
+            appId: "1:43844276882:web:90a6486fbf6ffde16e0c4b",
+            measurementId: "G-EM9VBZH9S7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Authentification
+        function loginUser(email, password) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert('Bienvenue ' + user.email);
+                    // Stocker l'UID pour pouvoir l'utiliser
+                    localStorage.setItem('userUID', user.uid);
+                    window.location.reload();
+                })
+                .catch((error) => {
+                    console.error("Erreur d'authentification", error);
+                    alert("Erreur d'authentification");
+                });
+        }
+
+        function registerUser(email, password) {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert('Utilisateur enregistré : ' + user.email);
+                })
+                .catch((error) => {
+                    console.error("Erreur d'inscription", error);
+                    alert("Erreur d'inscription");
+                });
+        }
+
+        // Récupérer l'état de l'utilisateur
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // L'utilisateur est authentifié
+                document.getElementById("userEmail").textContent = user.email;
+                document.getElementById("loginForm").style.display = 'none';
+                document.getElementById("logoutButton").style.display = 'block';
+            } else {
+                // L'utilisateur n'est pas authentifié
+                document.getElementById("loginForm").style.display = 'block';
+                document.getElementById("logoutButton").style.display = 'none';
+            }
+        });
+
+        // Fonction pour enregistrer un tour de voiture
+        function enregistrerTour(nbTours) {
+            const locationsRef = collection(db, "locations");
+            addDoc(locationsRef, {
+                date: new Date().toISOString(),
+                nbTours: nbTours,
+                montant: nbTours * 10,
+                uid: localStorage.getItem('userUID')
+            }).then(() => {
+                alert("Tour enregistré avec succès !");
+            }).catch((error) => {
+                console.error("Erreur lors de l'enregistrement : ", error);
+            });
+        }
+
+        // Fonction pour enregistrer un produit vendu
+        function enregistrerProduit(nom, achat, vente, qte) {
+            const ventesRef = collection(db, "ventes");
+            const benef = (vente - achat) * qte;
+            addDoc(ventesRef, {
+                nom_produit: nom,
+                prix_achat: achat,
+                prix_vente: vente,
+                quantite: qte,
+                benefice: benef,
+                date: new Date().toISOString(),
+                uid: localStorage.getItem('userUID')
+            }).then(() => {
+                alert("Produit vendu enregistré avec succès !");
+            }).catch((error) => {
+                console.error("Erreur lors de l'enregistrement : ", error);
+            });
+        }
+
+        // Fonction pour enregistrer des dépenses diverses
+        function enregistrerDepense(desc, montant) {
+            const depensesRef = collection(db, "depenses");
+            addDoc(depensesRef, {
+                description: desc,
+                montant: montant,
+                date: new Date().toISOString(),
+                uid: localStorage.getItem('userUID')
+            }).then(() => {
+                alert("Dépense enregistrée avec succès !");
+            }).catch((error) => {
+                console.error("Erreur lors de l'enregistrement : ", error);
+            });
+        }
+
+        // Fonction pour se déconnecter
+        function logoutUser() {
+            auth.signOut().then(() => {
+                localStorage.removeItem('userUID');
+                window.location.reload();
+            }).catch((error) => {
+                console.error("Erreur lors de la déconnexion", error);
+            });
+        }
+    </script>
+</head>
+
+<body class="bg-dark text-white">
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Suivi des Revenus et Dépenses</h1>
+
+        <!-- Connexion ou Inscription -->
+        <div id="loginForm">
+            <div class="mb-4">
+                <h3>Connexion</h3>
+                <input type="email" id="email" class="form-control mb-2" placeholder="Email">
+                <input type="password" id="password" class="form-control mb-2" placeholder="Mot de passe">
+                <button class="btn btn-primary" onclick="loginUser(document.getElementById('email').value, document.getElementById('password').value)">Se connecter</button>
+                <p>Pas encore de compte ? <a href="#" onclick="registerUser(document.getElementById('email').value, document.getElementById('password').value)">S'inscrire ici</a></p>
+            </div>
+        </div>
+
+        <!-- Afficher l'email de l'utilisateur -->
+        <div>
+            <span id="userEmail"></span>
+            <button id="logoutButton" class="btn btn-danger" onclick="logoutUser()">Se déconnecter</button>
+        </div>
+
+        <!-- Formulaire de location voiture -->
+        <div class="mb-4">
+            <h3>Location de voiture</h3>
+            <label for="nbTours" class="form-label">Nombre de tours</label>
+            <input type="number" id="nbTours" class="form-control" placeholder="Entrez le nombre de tours">
+            <button class="btn btn-primary mt-2" onclick="enregistrerTour(document.getElementById('nbTours').value)">Enregistrer Tour</button>
+        </div>
+
+        <!-- Formulaire de vente de produit -->
+        <div class="mb-4">
+            <h3>Vente de produit</h3>
+            <div class="mb-3">
+                <label for="nomProduit" class="form-label">Nom du produit</label>
+                <input type="text" id="nomProduit" class="form-control" placeholder="Ex: Ballon, Biscuit, etc.">
+            </div>
+            <div class="mb-3">
+                <label for="prixAchat" class="form-label">Prix d'achat (par unité)</label>
+                <input type="number" id="prixAchat" class="form-control" placeholder="Prix d'achat">
+            </div>
+            <div class="mb-3">
+                <label for="prixVente" class="form-label">Prix de vente (par unité)</label>
+                <input type="number" id="prixVente" class="form-control" placeholder="Prix de vente">
+            </div>
+            <div class="mb-3">
+                <label for="qteProduit" class="form-label">Quantité vendue</label>
+                <input type="number" id="qteProduit" class="form-control" placeholder="Quantité vendue">
+            </div>
+            <button class="btn btn-success mt-2" onclick="enregistrerProduit(document.getElementById('nomProduit').value, document.getElementById('prixAchat').value, document.getElementById('prixVente').value, document.getElementById('qteProduit').value)">Enregistrer Vente</button>
+        </div>
+
+        <!-- Formulaire de dépenses -->
+        <div class="mb-4">
+            <h3>Dépenses diverses</h3>
+            <div class="mb-3">
+                <label for="descriptionDepense" class="form-label">Description</label>
+                <input type="text" id="descriptionDepense" class="form-control" placeholder="Ex: Sandwich, Don, etc.">
+            </div>
+            <div class="mb-3">
+                <label for="montantDepense" class="form-label">Montant</label>
+                <input type="number" id="montantDepense" class="form-control" placeholder="Montant de la dépense">
+            </div>
+            <button class="btn btn-danger mt-2" onclick="enregistrerDepense(document.getElementById('descriptionDepense').value, document.getElementById('montantDepense').value)">Enregistrer Dépense</button>
+        </div>
+
+        <!-- Graphique des dépenses -->
+        <canvas id="revenueChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Code pour initialiser le graphique (à personnaliser selon les données de Firestore)
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr'],  // À remplacer avec les mois réels
+                datasets: [{
+                    label: 'Revenus',
+                    data: [100, 200, 300, 400],  // À remplacer avec les données réelles
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+
+</body>
+
+</html>

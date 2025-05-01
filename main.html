@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Revenus et Dépenses</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKJpdfbZ5-Me5rJ8mNrZ4dToBvt59H6Uk",
+            authDomain: "flowup-ed44b.firebaseapp.com",
+            projectId: "flowup-ed44b",
+            storageBucket: "flowup-ed44b.firebasestorage.app",
+            messagingSenderId: "43844276882",
+            appId: "1:43844276882:web:90a6486fbf6ffde16e0c4b",
+            measurementId: "G-EM9VBZH9S7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Vérifier si l'utilisateur est connecté
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Si l'utilisateur est connecté, récupérer ses informations
+                const uid = user.uid;
+                document.getElementById('userInfo').innerText = `Bienvenue, ${user.email}`;
+                // Charger les données de l'utilisateur
+                loadData(uid);
+            } else {
+                // Si non connecté, rediriger vers la page de connexion
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Charger les données des revenus et dépenses de l'utilisateur
+        async function loadData(uid) {
+            const depensesRef = collection(db, "depenses");
+            const locationsRef = collection(db, "locations");
+            const ventesRef = collection(db, "ventes");
+
+            const depensesQuery = query(depensesRef, where("userId", "==", uid));
+            const locationsQuery = query(locationsRef, where("userId", "==", uid));
+            const ventesQuery = query(ventesRef, where("userId", "==", uid));
+
+            const depensesSnapshot = await getDocs(depensesQuery);
+            const locationsSnapshot = await getDocs(locationsQuery);
+            const ventesSnapshot = await getDocs(ventesQuery);
+
+            let totalDepenses = 0;
+            depensesSnapshot.forEach((doc) => {
+                totalDepenses += doc.data().montant;
+            });
+
+            let totalLocations = 0;
+            locationsSnapshot.forEach((doc) => {
+                totalLocations += doc.data().montant;
+            });
+
+            let totalVentes = 0;
+            ventesSnapshot.forEach((doc) => {
+                totalVentes += doc.data().benefice;
+            });
+
+            // Mettre à jour l'affichage avec les totaux
+            document.getElementById('totalDepenses').innerText = `Dépenses totales : ${totalDepenses}€`;
+            document.getElementById('totalLocations').innerText = `Revenus de locations : ${totalLocations}€`;
+            document.getElementById('totalVentes').innerText = `Revenus des ventes : ${totalVentes}€`;
+        }
+
+        // Fonction pour ajouter une nouvelle dépense
+        function enregistrerDepense(desc, montant) {
+            const user = auth.currentUser;
+            if (user) {
+                const depensesRef = collection(db, "depenses");
+                addDoc(depensesRef, {
+                    description: desc,
+                    montant: montant,
+                    date: new Date().toISOString(),
+                    userId: user.uid
+                })
+                    .then(() => {
+                        alert("Dépense enregistrée avec succès !");
+                        loadData(user.uid); // Recharger les données après l'ajout
+                    })
+                    .catch((error) => {
+                        console.error("Erreur lors de l'enregistrement : ", error);
+                    });
+            }
+        }
+
+        // Fonction pour ajouter une vente
+        function enregistrerVente(nom, achat, vente, qte) {
+            const user = auth.currentUser;
+            if (user) {
+                const ventesRef = collection(db, "ventes");
+                const benef = (vente - achat) * qte;
+                addDoc(ventesRef, {
+                    nom_produit: nom,
+                    prix_achat: achat,
+                    prix_vente: vente,
+                    quantite: qte,
+                    benefice: benef,
+                    date: new Date().toISOString(),
+                    userId: user.uid
+                })
+                    .then(() => {
+                        alert("Produit vendu enregistré avec succès !");
+                        loadData(user.uid); // Recharger les données après l'ajout
+                    })
+                    .catch((error) => {
+                        console.error("Erreur lors de l'enregistrement : ", error);
+                    });
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-top: 20px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        #userInfo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Suivi des Revenus et Dépenses</h1>
+        <p id="userInfo"></p>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total des Dépenses</h5>
+                <p id="totalDepenses" class="card-text">Chargement...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total des Revenus (Location)</h5>
+                <p id="totalLocations" class="card-text">Chargement...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total des Revenus (Ventes)</h5>
+                <p id="totalVentes" class="card-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- Formulaires pour ajouter une dépense et une vente -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Ajouter une dépense</h5>
+                <input type="text" id="descriptionDepense" class="form-control" placeholder="Description">
+                <input type="number" id="montantDepense" class="form-control" placeholder="Montant">
+                <button class="btn btn-danger" onclick="enregistrerDepense(document.getElementById('descriptionDepense').value, document.getElementById('montantDepense').value)">Ajouter Dépense</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Ajouter une vente</h5>
+                <input type="text" id="nomProduit" class="form-control" placeholder="Nom du produit">
+                <input type="number" id="prixAchat" class="form-control" placeholder="Prix d'achat">
