@@ -1,0 +1,157 @@
+/* Conteneur des activités */
+.activities-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Carte d'activité */
+.activity-card {
+  width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: #333;
+}
+
+.activity-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+}
+
+.activity-card button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.activity-card button:hover {
+  background-color: #c82333;
+}
+
+/* Couleurs différentes pour chaque carte */
+.activity-card-0 {
+  background-color: #424242; /* Gris foncé */
+}
+
+.activity-card-1 {
+  background-color: #37474f; /* Bleu-gris foncé */
+}
+
+.activity-card-2 {
+  background-color: #263238; /* Bleu nuit */
+}
+
+.activity-card-3 {
+  background-color: #1b1b1b; /* Noir foncé */
+}
+
+/* Date de l'activité */
+.activity-date {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ff9800;
+}
+
+/* Conteneur du diagramme */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+/* Texte des cartes */
+.activity-card p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+/* Carte pour la Sadaqa */
+.sadaqa-card {
+  background-color: #f4f4f4;
+  color: #333;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.sadaqa-card .sadaqa-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff9800;
+}
+
+/* Mise à jour de la Sadaqa */
+.update-sadaqa input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.update-sadaqa button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.update-sadaqa button:hover {
+  background-color: #45a049;
+}
+
+/* Carte générale */
+.card {
+  background-color: #2c2c2c; /* Couleur sombre */
+  color: rgb(0, 0, 0);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ffcc00; /* Jaune pour les titres */
+}
+
+/* Informations personnelles */
+.profile-info {
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+}
+
+.profile-image {
+  border: 3px solid #ff9800;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+  transform: scale(1.1);
+}
+
+.profile-info h3:hover {
+  text-decoration: underline;
+}
+
+.profile-info p:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script type="module" src="./firebase-config.js"></script>
+    <script type="module" src="./profile.js"></script>
+</head>
+<body>
+    <!-- Include Navbar -->
+    <div id="navbar"></div>
+
+    <!-- Profile Section -->
+    <div class="container mt-5">
+        <h2>User Profile</h2>
+        <div id="profile-info" class="mt-4">
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <p><strong>User ID:</strong> <span id="user-id"></span></p>
+        </div>
+        <button id="logout-btn" class="btn btn-danger mt-3">Logout</button>
+    </div>
+
+    <script>
+        // Include the navbar dynamically
+        document.getElementById('navbar').innerHTML = fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading navbar:', error));
+    </script>
+</body>
+</html>

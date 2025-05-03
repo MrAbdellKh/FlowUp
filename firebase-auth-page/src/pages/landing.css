@@ -1,0 +1,147 @@
+/* landing.css */
+
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.section-card {
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffffff;
+  transition: transform 0.2s ease-in-out;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #444;
+}
+
+.form-control {
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+}
+
+button.btn {
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-weight: 500;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+@keyframes oscillate {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(50px); /* Va doucement à droite */
+  }
+  100% {
+    transform: translateX(0); /* Revient au point de départ */
+  }
+}
+
+.summary-card {
+  position: relative;
+  width: 300px;
+  padding: 20px;
+  margin-bottom: 50px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+
+  /* Animation fluide et infinie */
+  animation: oscillate 8s ease-in-out infinite;
+}
+
+/* Animation pour la carte Résumé */
+.animated-summary {
+  animation: slideRightToLeft 5s linear infinite;
+}
+
+/* Animation de droite à gauche */
+@keyframes slideRightToLeft {
+  0% {
+    transform: translateX(100%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Titre de la carte Résumé */
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333; /* Couleur sombre pour le titre */
+}
+
+.summary-card p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .section-card {
+    margin-bottom: 15px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+}
